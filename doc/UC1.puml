@@ -1,0 +1,33 @@
+@startuml UC1
+title [UC1]RegisterAccount
+skinparam backgroundColor transparent
+boundary inicio
+entity "RegisterAccount()"
+participant WebClientUser
+database AccountRepository
+participant  CRM
+inicio -> "RegisterAccount()" : (userId, accountRequest)
+alt Usuario existente
+  "RegisterAccount()" -> WebClientUser : validar usuario exista (userId)
+  WebClientUser --> "RegisterAccount()" : User
+else Usuario no existe
+  "RegisterAccount()" --> inicio : Error: Empty User
+end
+"RegisterAccount()" -> AccountRepository : Obtener cuentas activas
+AccountRepository --> "RegisterAccount()" : Cuentas activas
+"RegisterAccount()" -> "RegisterAccount()" : Validar que no tiene cuentas activas con la misma moneda de accountRequest 
+alt Alguna cuenta activa con la misma moneda
+  "RegisterAccount()" --> inicio : Error: Active account with same currency
+else Ninguna de sus cuentas activa con la misma moneda
+  "RegisterAccount()" -> AccountRepository : Crear cuenta (accountRequest)
+  AccountRepository --> "RegisterAccount()" : Cuenta creada
+  activate "RegisterAccount()" 
+  "RegisterAccount()" -> CRM : Registrar en CRM
+  activate CRM
+  CRM --> "RegisterAccount()" : Void
+  deactivate CRM
+  "RegisterAccount()" -> inicio : userId, accountId
+  deactivate "RegisterAccount()"
+end
+
+@enduml
