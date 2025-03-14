@@ -4,7 +4,7 @@ FROM eclipse-temurin:17-jdk
 
 RUN apt-get update && apt-get install -y gradle
 
-RUN apt update && sudo apt install -y git
+RUN apt-get update &&  apt-get install -y git
 
 RUN useradd -m -s /bin/bash vscode
 
